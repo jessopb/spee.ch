@@ -84,6 +84,13 @@ export function addAssetToAssetList (id, error, name, claimId, shortId, claimDat
   };
 }
 
+export function removeAsset (data) {
+  return {
+    type: actions.ASSET_REMOVE,
+    data,
+  };
+}
+
 // channel actions
 
 export function addNewChannelToChannelList (id, name, shortId, longId, claimsData) {

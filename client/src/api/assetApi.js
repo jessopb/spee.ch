@@ -37,3 +37,15 @@ export function checkClaimAvailability (claim) {
   const url = `/api/claim/availability/${claim}`;
   return Request(url);
 }
+
+export function doAbandonClaim (claimId) {
+  const params = {
+    method : 'POST',
+    body   : JSON.stringify({claimId}),
+    headers: new Headers({
+      'Content-Type': 'application/json',
+    }),
+    credentials: 'include',
+  };
+  return Request('/api/claim/abandon', params);
+}

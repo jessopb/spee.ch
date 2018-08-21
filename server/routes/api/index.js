@@ -14,6 +14,8 @@ const claimGet = require('../../controllers/api/claim/get');
 const claimList = require('../../controllers/api/claim/list');
 const claimLongId = require('../../controllers/api/claim/longId');
 const claimPublish = require('../../controllers/api/claim/publish');
+const claimAbandon = require('../../controllers/api/claim/abandon');
+const claimUpdate = require('../../controllers/api/claim/update');
 const claimResolve = require('../../controllers/api/claim/resolve');
 const claimShortId = require('../../controllers/api/claim/shortId');
 const fileAvailability = require('../../controllers/api/file/availability');
@@ -76,11 +78,9 @@ const autoblockPublishMiddleware = (req, res, next) => {
 module.exports = {
   // homepage routes
   '/api/homepage/data/channels': { controller: [ torCheckMiddleware, channelData ] },
-
   // channel routes
   '/api/channel/availability/:name': { controller: [ torCheckMiddleware, channelAvailability ] },
   '/api/channel/short-id/:longId/:name': { controller: [ torCheckMiddleware, channelShortId ] },
-  '/api/channel/data/:channelName/:channelClaimId': { controller: [ torCheckMiddleware, channelData ] },
   '/api/channel/data/:channelName/:channelClaimId': { controller: [ torCheckMiddleware, channelData ] },
   '/api/channel/claims/:channelName/:channelClaimId/:page': { controller: [ torCheckMiddleware, channelClaims ] },
   // claim routes
@@ -89,7 +89,9 @@ module.exports = {
   '/api/claim/get/:name/:claimId': { controller: [ torCheckMiddleware, claimGet ] },
   '/api/claim/list/:name': { controller: [ torCheckMiddleware, claimList ] },
   '/api/claim/long-id': { method: 'post', controller: [ torCheckMiddleware, claimLongId ] }, // note: should be a 'get'
-  '/api/claim/publish': { method: 'post', controller: [ torCheckMiddleware, autoblockPublishMiddleware, multipartMiddleware, claimPublish ] },
+  '/api/claim/publish': { method: 'post', controller: [ torCheckMiddleware, multipartMiddleware, claimPublish ] },
+  '/api/claim/update': { method: 'post', controller: [ torCheckMiddleware, multipartMiddleware, claimUpdate ] },
+  '/api/claim/abandon': { method: 'post', controller: [ torCheckMiddleware, multipartMiddleware, claimAbandon ] },
   '/api/claim/resolve/:name/:claimId': { controller: [ torCheckMiddleware, claimResolve ] },
   '/api/claim/short-id/:longId/:name': { controller: [ torCheckMiddleware, claimShortId ] },
   // file routes
