@@ -9,9 +9,18 @@ import ClickToCopy from '@components/ClickToCopy';
 
 class AssetInfo extends React.Component {
   render () {
-    const { asset: { shortId, claimData : { channelName, certificateId, description, name, claimId, fileExt, contentType, thumbnail, host } } } = this.props;
+    const { editable, asset: { shortId, claimData : { channelName, certificateId, description, name, claimId, fileExt, contentType, thumbnail, host } } } = this.props;
     return (
       <div>
+        {editable && (
+          <Row>
+            <RowLabeled
+              label={<Label value={'Edit:'} />}
+              content={<Link to={`/edit/${claimId}/${name}`}>{name}</Link>}
+            />
+          </Row>
+        )}
+
         {channelName && (
           <Row>
             <RowLabeled
