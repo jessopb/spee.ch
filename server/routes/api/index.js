@@ -20,6 +20,7 @@ const publishingConfig = require('../../controllers/api/config/site/publishing')
 const getTorList = require('../../controllers/api/tor');
 const getBlockedList = require('../../controllers/api/blocked');
 const getOEmbedData = require('../../controllers/api/oEmbed');
+const existingChannelAccount = require('../../controllers/api/user/existingChannel');
 
 module.exports = (app) => {
   // channel routes
@@ -48,4 +49,6 @@ module.exports = (app) => {
   app.get('/api/blocked', torCheckMiddleware, getBlockedList);
   // open embed
   app.get('/api/oembed', torCheckMiddleware, getOEmbedData);
+  // instance specific
+  app.post('/api/existing-channel', torCheckMiddleware, existingChannelAccount);
 };
