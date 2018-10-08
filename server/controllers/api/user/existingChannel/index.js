@@ -5,7 +5,7 @@ const existingChannelAccount = async ({ body }, res) => {
   const { channelName, channelId, password } = body;
   logger.info('existing channel account', body);
 
-  return res.status(200).json({body});
+  // return res.status(200).json({body});
 
   const userData = {
     userName: channelName,
