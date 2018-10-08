@@ -5,7 +5,7 @@ const existingChannelAccount = async ({ body }, res) => {
   const { channelName, channelId, password } = body;
   logger.info('existing channel account', body);
 
-  res.status(200).json({body});
+  return res.status(200).json({body});
 
   const userData = {
     userName: channelName,
@@ -32,7 +32,7 @@ const existingChannelAccount = async ({ body }, res) => {
     ]);
   } catch (error) {
     logger.error('ERROR adding user, channel, certificate', error);
-    res.status(400).json({
+    return res.status(400).json({
       success: false,
       message: error,
     });
@@ -46,14 +46,14 @@ const existingChannelAccount = async ({ body }, res) => {
     ]);
   } catch (error) {
     logger.error('ERROR associating channel, user', error);
-    res.status(400).json({
+    return res.status(400).json({
       success: false,
       message: error,
     });
   }
   logger.info('channel, user successfully associated');
 
-  res.send(200).json({
+  return res.send(200).json({
     success: true,
     message: 'an account has been created and associated with your channel',
   });
