@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 const AssetPreview = (props) => {
   const {defaultThumbnail, claimData} = props;
-  const {name, claimId, fileExt, contentType, thumbnail} = claimData;
+  const {name, claimId, fileExt, contentType, thumbnail, title} = claimData;
   const embedUrl = `/${claimId}/${name}.${fileExt}`;
   const showUrl = `/${claimId}/${name}`;
   return (
