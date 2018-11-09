@@ -1,6 +1,6 @@
-# Create Your Own Spee.ch on Ubuntu 16.x VPS
+# Create Your Own Spee.ch on Ubuntu 16.x 18.x VPS
 
-# i. Overview
+# Overview
 
 ## Prerequisites
   * UBUNTU 16+ VPS with root access
@@ -18,6 +18,7 @@
   * HTTPS PROXY SERVER
     * Caddy for personal use
     * Exposed ports: 22, 80, 443, 3333, 4444
+    * Reverse proxies to App on 3000
   * SPEE.CH
   * LBRYNET DAEMON
 
@@ -25,6 +26,8 @@
 # 1. Update OS and install tools
 ## OS
   `sudo apt update -y`
+
+  `ulimit -n 8192`
 
 ## Git
   `sudo apt install git -y`
@@ -44,19 +47,19 @@
   `npm --version (6.x)`
 
 
-## Curl, Tmux, Unzip
+## Curl, Tmux, Unzip, ffmpeg
 
-   `sudo apt install curl tmux unzip ffmpeg -y`
+  `sudo apt install curl tmux unzip ffmpeg -y`
 
-   Verify:
+  Verify:
 
-   `curl --version`
+  `curl --version`
 
-   `tmux --version`
+  `tmux --version`
 
-   `unzip --version`
+  `unzip --version`
 
-   `ffmpeg --version`
+  `ffmpeg --version`
 
 ## Grab config files
 
@@ -64,100 +67,111 @@
 
   `chmod 640 -R ~/speechconfigs`
 
-## Update ulimit for production server
-
-  `ulimit -n 8192`
-
 # 2 Secure the UFW firewall
 ## UFW
-   `sudo ufw status`
 
-   `sudo ufw allow 80`
+  `sudo ufw status`
 
-   `sudo ufw allow 443`
+  `sudo ufw allow 80`
 
-   `sudo ufw allow 22`
+  `sudo ufw allow 443`
 
-   `sudo ufw allow 3333`
+  `sudo ufw allow 22`
 
-   `sudo ufw allow 4444`
+  `sudo ufw allow 3333`
 
-   `sudo ufw default allow outgoing`
+  `sudo ufw allow 4444`
 
-   `sudo ufw default deny incoming`
+  `sudo ufw default allow outgoing`
 
-   `sudo ufw show added`
+  `sudo ufw default deny incoming`
 
-   `sudo ufw enable` (yes, you've allowed ssh 22)
+  `sudo ufw show added`
 
-   `sudo ufw status`
+  `sudo ufw enable` (yes, you've allowed ssh 22)
+
+  `sudo ufw status`
 
 # 3 Install Caddy to handle https and reverse proxy
-## Caddy
-   `curl https://getcaddy.com | bash -s personal`
+##  Get Caddy
 
-   `mkdir -p /opt/caddy/logs/`
+  `curl https://getcaddy.com | bash -s personal`
 
-   `mkdir -p /opt/caddy/store/`
+## Set up Caddy
 
-   `cp ~/speechconfigs/caddy/Caddyfile.speechsample ~/speechconfigs/caddy/Caddyfile`
+  `mkdir -p /opt/caddy/logs/`
 
-   `nano ~/speechconfigs/caddy/Caddyfile`
-     ( Change {{EXAMPLE.COM}} to YOURDOMAIN.COM )
+  `mkdir -p /opt/caddy/store/`
 
-   `cp ~/speechconfigs/caddy/Caddyfile /opt/caddy/`
+  `cp ~/speechconfigs/caddy/Caddyfile.speechsample ~/speechconfigs/caddy/Caddyfile`
 
-   `cp ~/speechconfigs/caddy/caddy.service /etc/systemd/system/caddy.service`
+  `nano ~/speechconfigs/caddy/Caddyfile`
+   ( Change {{EXAMPLE.COM}} to YOURDOMAIN.COM )
 
-   `chmod 644 /etc/systemd/system/caddy.service`
+  `cp ~/speechconfigs/caddy/Caddyfile /opt/caddy/`
 
-   `chown -R www-data:www-data /opt/caddy/`
+## Set up Caddy to run as systemd service
 
-   `setcap 'cap_net_bind_service=+ep' /usr/local/bin/caddy`
+  `cp ~/speechconfigs/caddy/caddy.service /etc/systemd/system/caddy.service`
 
-   `systemctl daemon-reload`
+  `chmod 644 /etc/systemd/system/caddy.service`
 
-   `systemctl start caddy`
+  `chown -R www-data:www-data /opt/caddy/`
 
-   `systemctl status caddy`
+  `setcap 'cap_net_bind_service=+ep' /usr/local/bin/caddy`
 
-   At this point, navigating to yourdomain.com should give you a 502 bad gateway error. That's good!
+  `systemctl daemon-reload`
 
+  `systemctl start caddy`
+
+  `systemctl status caddy`
+
+  At this point, navigating to yourdomain.com should give you a 502 bad gateway error. That's good!
 
 # 4 Set up MySql
+
 ## Install MySql
-   `sudo apt install mysql-server -y`
-    ( enter blank password each time )
-   `sudo systemctl status mysql` (q to exit)
+
+  `sudo apt install mysql-server -y`
+  ( enter blank password each time )
+  `sudo systemctl status mysql` (q to exit)
+
 ## Secure Setup
-   `sudo mysql_secure_installation`
-    * No to password validation
-    * Y to all other options
-    * password abcd1234
+
+  `sudo mysql_secure_installation`
+  * No to password validation
+  * Y to all other options
+  * password abcd1234
+
 ## Login to mysql from root to complete setup:
-   `mysql` to enter mysql> console
 
-   mysql> `ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'abcd1234';`
+  `mysql` to enter mysql> console
 
-   mysql> `FLUSH PRIVILEGES;`
+  mysql> `ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'abcd1234';`
 
-   Control+D to exit
+  mysql> `FLUSH PRIVILEGES;`
 
-   Verify:
+  Control+D to exit
 
-   `mysql -u root -p` and then entering your password abcd1234 should give you the mysql> shell
+  Verify:
+
+  `mysql -u root -p` and then entering your password abcd1234 should give you the mysql> shell
 
 # 5 Get Lbrynet Daemon
 
 ### TODO: Enable something like sudo systemctl start lbrynet so it runs as www-data
 
 ## Enter tmux
-   `tmux`
-    * Ctrl+b, d detaches leaving session running.
-    * ~# `tmux`, Ctrl+b, ( goes back to that session.
+
+  `tmux`
+  * Ctrl+b, d detaches leaving session running.
+  * ~# `tmux`, Ctrl+b, ( goes back to that session.
+
 ## Get the daemon
-   ~# `wget -O ~/latest_daemon.zip https://lbry.io/get/lbrynet.linux.zip`
-   ~# `unzip -o -u ~/latest_daemon.zip`
+  `wget -O ~/latest_daemon.zip https://lbry.io/get/lbrynet.linux.zip`
+
+  `unzip -o -u ~/latest_daemon.zip`
+
 ## Start the daemon
    ~# `./lbrynet start`
 ## Detatch tmux session
@@ -169,11 +183,14 @@
 
 ## Display wallet address to which to send 5+ LBC.
 ### These commands work when `lbrynet start` is already running in another tmux
+
   `./lbrynet commands` to check out the current commands
 
   `./lbrynet address-list` to get your wallet address
 
   `Ctrl + Shift + C` after highlighting an address to copy.
+
+  Use a LBRY app or daemon to send LBC to the address.
 
   `./lbrynet account_balance` to check your balance after you've sent LBC.
 
@@ -191,12 +208,12 @@
 
   `git clone https://github.com/{{youraccount}}/spee.ch.git`
 
-### Basic spee.ch
+### LBRY spee.ch repo?
 
   `git clone https://github.com/lbryio/spee.ch`
 
 ## Build it
-   ~# `cd spee.ch`
+   `cd spee.ch`
 
    ~/spee.ch# `npm install`
 
@@ -213,8 +230,9 @@
 
   ~/spee.ch/# `npm run start`
 
-## Pray.
 ## Try it
+
+  Navigate to yourdomain.fun!
 
 
 ### 6 Maintenance Proceedures
@@ -242,7 +260,7 @@
     * sudo nano /lib/systemd/system/lbrynet.service
     ```
     [Unit]
-    Description=hello_env.js - making your environment variables rad
+    Description=hello_env.js - making your environment variables read
     Documentation=https://example.com
     After=network.target
 
