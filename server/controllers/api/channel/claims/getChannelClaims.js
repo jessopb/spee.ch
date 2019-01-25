@@ -5,25 +5,26 @@ const { returnPaginatedChannelClaims } = require('./channelPagination.js');
 
 const getChannelClaims = async (channelName, channelShortId, page) => {
   const channelId = await chainquery.claim.queries.getLongClaimId(channelName, channelShortId);
-  const params = { content_type: [
-    'image/jpeg',
-    'image/jpg',
-    'image/png',
-    'image/gif',
-    'video/mp4',
-  ] };
+  const params = {
+    content_type: ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'video/mp4'],
+  };
   let channelClaims;
   if (channelId) {
-    channelClaims = await chainquery.claim.queries.getAllChannelClaims(channelId, params);
+    channelClaims = await chainquery.claim.queries.getAllChannelClaims(channelId); // removed params
   }
 
   const split = channelClaims.reduce(
-    (acc, val) => val.dataValues.height === 0 ? { ...acc, zero: acc.zero.concat(val) } : { ...acc, nonzero: acc.nonzero.concat(val) },
+    (acc, val) =>
+      val.dataValues.height === 0
+        ? { ...acc, zero: acc.zero.concat(val) }
+        : { ...acc, nonzero: acc.nonzero.concat(val) },
     { zero: [], nonzero: [] }
   );
   channelClaims = split.zero.concat(split.nonzero);
 
-  const processingChannelClaims = channelClaims ? channelClaims.map((claim) => getClaimData(claim, channelName, channelShortId)) : [];
+  const processingChannelClaims = channelClaims
+    ? channelClaims.map(claim => getClaimData(claim, channelName, channelShortId))
+    : [];
   const processedChannelClaims = await Promise.all(processingChannelClaims);
 
   return returnPaginatedChannelClaims(channelName, channelId, processedChannelClaims, page);
