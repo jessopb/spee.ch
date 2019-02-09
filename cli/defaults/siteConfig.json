@@ -32,7 +32,13 @@
     "closedRegistration": false,
     "serveOnlyApproved": false,
     "publishOnlyApproved": false,
-    "approvedChannels": [],
+    "approvedChannels": [
+      {
+        "name": "@thumbnails",
+        "longId": "da6ad920fd1660d165e04dc909618365daf17a3a",
+        "shortId": "da"
+      }
+    ],
     "publishingChannelWhitelist": [],
     "channelClaimBidAmount": "0.1",
     "fileClaimBidAmount": "0.01",
@@ -42,11 +48,12 @@
   },
   "serving": {
     "markdownSettings": {
-      "skipHtml": true,
-      "privilegedDisallowedTypesDescriptions": ["Image"],
-      "privilegedDisallowedTypesMain": [],
-      "publicDisallowedTypesDescriptions": ["Image"],
-      "publicDisallowedTypesMain": []
+      "skipHtmlMain": false,
+      "escapeHtmlMain": false,
+      "skipHtmlDescriptions": true,
+      "escapeHtmlDescriptions": true,
+      "disallowedTypesDescriptions": ["Image"],
+      "disallowedTypesMain": []
     },
     "customFileExtensions": {
       "application/example-type": "example"
