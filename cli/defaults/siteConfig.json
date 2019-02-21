@@ -49,6 +49,8 @@
     }
   },
   "serving": {
+    "maxKeyFeeInLBC": 0,
+    "maxKeyFeeInUSD": 0,
     "markdownSettings": {
       "skipHtmlMain": true,
       "escapeHtmlMain": true,

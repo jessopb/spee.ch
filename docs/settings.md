@@ -50,11 +50,13 @@ PUBLISHING:
         "application/octet-stream": 50000000
       }
     }
-    
+
 SERVING:
 
+    "maxKeyFeeInLBC": 0; - here you can allow your installation to pay fees for paid content
+    "maxKeyFeeInUSD": 0;
     "markdownSettings": {
-      "skipHtmlMain": true, - false: render html, in a somewhat unpredictable way~
+      "skipHtmlMain": true, - false: render html, in a somewhat unpredictable way
       "escapeHtmlMain": true, - true: rather than render html, escape it and print it visibly
       "skipHtmlDescriptions": true, - as above, for descriptions
       "escapeHtmlDescriptions": true, - as above, for descriptions
