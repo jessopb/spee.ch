@@ -18,7 +18,7 @@ class ChannelSelect extends React.Component {
   componentWillMount () {
     const { loggedInChannelName, onChannelSelect, publishOnlyApproved, onPublishInChannelChange } = this.props;
     if (loggedInChannelName) {
-      onChannelSelect(loggedInChannelName);
+      onPublishInChannelChange(true);
     }
     if (publishOnlyApproved) {
       onPublishInChannelChange(true);
@@ -37,7 +37,10 @@ class ChannelSelect extends React.Component {
     this.props.onChannelSelect(selectedOption);
   }
   render () {
-    const { publishInChannel, channelError, selectedChannel, loggedInChannelName, publishOnlyApproved } = this.props;
+    let { publishInChannel, channelError, selectedChannel, loggedInChannelName, publishOnlyApproved } = this.props;
+    if (loggedInChannelName) {
+      publishInChannel = 'checked';
+    }
     if (publishOnlyApproved) {
       return (
         <React.Fragment>
