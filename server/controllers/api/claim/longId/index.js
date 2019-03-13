@@ -26,6 +26,7 @@ const claimLongId = ({ ip, originalUrl, body, params }, res) => {
       claimId = fullClaimId;
       return chainquery.claim.queries.getOutpoint(claimName, fullClaimId).catch(() => {});
     })
+    // Remove this, replace with file_list
     .then(outpointResult => {
       if (!outpointResult) {
         return db.Claim.getOutpoint(claimName, claimId);
@@ -36,7 +37,7 @@ const claimLongId = ({ ip, originalUrl, body, params }, res) => {
       return db.Blocked.isNotBlocked(outpoint);
     })
     .then(() => {
-      res.status(200).json({success: true, data: claimId});
+      res.status(200).json({ success: true, data: claimId });
     })
     .catch(error => {
       if (error === NO_CLAIM) {
@@ -54,7 +55,8 @@ const claimLongId = ({ ip, originalUrl, body, params }, res) => {
       if (error === BLOCKED_CLAIM) {
         return res.status(410).json({
           success: false,
-          message: 'In response to a complaint we received under the US Digital Millennium Copyright Act, we have blocked access to this content from our applications. For more details, see https://lbry.io/faq/dmca',
+          message:
+            'In response to a complaint we received under the US Digital Millennium Copyright Act, we have blocked access to this content from our applications. For more details, see https://lbry.io/faq/dmca',
         });
       }
       handleErrorResponse(originalUrl, ip, error, res);

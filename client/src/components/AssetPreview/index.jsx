@@ -6,7 +6,7 @@ import * as Icon from 'react-feather';
 const AssetPreview = ({ defaultThumbnail, claimData }) => {
   const {name, fileExt, contentType, thumbnail, title, blocked} = claimData;
   const showUrl = createCanonicalLink({asset: {...claimData}});
-  const embedUrl = `${showUrl}.${fileExt}`;
+  const embedUrl = `${showUrl}.${fileExt}?thumbnail=true`;
   /*
   we'll be assigning media icon based on supported type / mime types
   */

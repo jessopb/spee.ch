@@ -7,9 +7,10 @@ const fetchClaimData = async params => {
 
   const [cq, local] = await Promise.all([
     chainquery.claim.queries.resolveClaim(name, claimId).catch(() => {}),
+    // replace with file_list
     db.Claim.resolveClaim(name, claimId).catch(() => {}),
   ]);
-  // Todo: don't use localdb to get post publish content
+  // Use newFileCache
   if (!cq && !local) {
     return null;
   }

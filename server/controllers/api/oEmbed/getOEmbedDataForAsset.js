@@ -18,6 +18,7 @@ const getOEmbedDataForAsset = (channelName, channelClaimId, claimName, claimId) 
   return getClaimId(channelName, channelClaimId, claimName, claimId)
     .then(fullClaimId => {
       claimId = fullClaimId;
+      // use getFileListFileByClaimId(cid) to get outpoint
       return db.Claim.findOne({
         where: {
           name: claimName,
@@ -26,6 +27,7 @@ const getOEmbedDataForAsset = (channelName, channelClaimId, claimName, claimId) 
       });
     })
     .then(claimRecord => {
+      // use outpoint from file_list
       claimData = claimRecord.dataValues;
       return db.Blocked.isNotBlocked(claimData.outpoint);
     })

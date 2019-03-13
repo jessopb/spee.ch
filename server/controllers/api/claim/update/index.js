@@ -119,11 +119,12 @@ const claimUpdate = ({ body, files, headers, ip, originalUrl, user, tor }, res) 
       if (claimRecord.content_type === 'video/mp4' && files.file) {
         thumbnailUpdate = true;
       }
-
+      // No need to resolve here? What do we do with File.findOne?
       if (!files.file || thumbnailUpdate) {
         return Promise.all([
+          // Will be: return getFileListFileByClaimId(claimId)
           db.File.findOne({ where: { name, claimId: claim.claim_id } }),
-          resolveUri(`${claim.name}#${claim.claim_id}`),
+          // resolveUri(`${claim.name}#${claim.claim_id}`),
         ]);
       }
 
@@ -172,6 +173,7 @@ const claimUpdate = ({ body, files, headers, ip, originalUrl, user, tor }, res) 
           publishParams['file_path'] = filePath;
         }
       } else {
+        // Here fileResult should be a file_list result.
         fileName = fileResult.fileName;
         fileType = fileResult.fileType;
         publishParams['thumbnail'] = claimRecord.thumbnail_url;

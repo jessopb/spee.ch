@@ -22,12 +22,14 @@ const claimGet = async ({ ip, originalUrl, params }, res) => {
     if (claimInfo) {
       logger.info('claim/get: claim resolved in chainquery');
     }
-    if (!claimInfo) {
-      claimInfo = await db.Claim.resolveClaim(name, claimId);
-    }
+    // if (!claimInfo) {
+    //   claimInfo = await db.Claim.resolveClaim(name, claimId);
+    // }
     if (!claimInfo) {
       throw new Error('claim/get: resolveClaim: No matching uri found in Claim table');
     }
+    // SEE IF WE SHOULD SERVE IT
+    // MAKE SURE WE HAVE IT
     let lbrynetResult = await getClaim(`${name}#${claimId}`);
     if (!lbrynetResult) {
       throw new Error(`claim/get: getClaim Unable to Get ${name}#${claimId}`);
@@ -41,12 +43,19 @@ const claimGet = async ({ ip, originalUrl, params }, res) => {
     if (fileReady !== 'ready') {
       throw new Error('claim/get: failed to get file after 10 seconds');
     }
-    const fileData = await createFileRecordDataAfterGet(claimData, lbrynetResult);
-    if (!fileData) {
-      throw new Error('claim/get: createFileRecordDataAfterGet failed to create file in time');
+    // MAKE SURE DIMENSIONS ARE RECORDED
+    // Here, instead add file to processing cache
+    try {
+      const fileData = await createFileRecordDataAfterGet(claimData, lbrynetResult);
+      if (!fileData) {
+        throw new Error('claim/get: createFileRecordDataAfterGet failed to create file in time');
+      }
+      const upsertCriteria = { name, claimId };
+      await db.upsert(db.File, fileData, upsertCriteria, 'File');
+    } catch (error) {
+      logger.error(`An error occurred getting creating file record`);
     }
-    const upsertCriteria = { name, claimId };
-    await db.upsert(db.File, fileData, upsertCriteria, 'File');
+
     const { message, completed } = lbrynetResult;
     res.status(200).json({
       success: true,

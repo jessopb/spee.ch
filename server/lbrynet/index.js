@@ -54,18 +54,50 @@ module.exports = {
     });
   },
   getFileListFileByOutpoint(outpoint) {
-    logger.debug(`lbryApi >> Getting File_List for "${outpoint}"`);
+    logger.debug(`lbryApi >> Getting File_List for Outpoint "${outpoint}"`);
     const gaStartTime = Date.now();
     return new Promise((resolve, reject) => {
       axios
         .post(lbrynetUri, {
           method: 'file_list',
           params: {
-            outpoint,
+            outpoint: outpoint,
           },
         })
         .then(response => {
-          sendGATimingEvent('lbrynet', 'getFileList', 'FILE_LIST', gaStartTime, Date.now());
+          sendGATimingEvent(
+            'lbrynet',
+            'getFileListByOutpoint',
+            'FILE_LIST',
+            gaStartTime,
+            Date.now()
+          );
+          handleLbrynetResponse(response, resolve, reject);
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  },
+  getFileListFileByClaimId(claimId) {
+    logger.debug(`lbryApi >> Getting File_List for ClaimId "${claimId}"`);
+    const gaStartTime = Date.now();
+    return new Promise((resolve, reject) => {
+      axios
+        .post(lbrynetUri, {
+          method: 'file_list',
+          params: {
+            claim_Id: claimId,
+          },
+        })
+        .then(response => {
+          sendGATimingEvent(
+            'lbrynet',
+            'getFileListByClaimId',
+            'FILE_LIST',
+            gaStartTime,
+            Date.now()
+          );
           handleLbrynetResponse(response, resolve, reject);
         })
         .catch(error => {
@@ -120,6 +152,8 @@ module.exports = {
           if (Object.keys(data.result).length === 0 && data.result.constructor === Object) {
             // workaround for daemon returning empty result object
             // https://github.com/lbryio/lbry/issues/1485
+
+            // replace this with publishCache
             db.Claim.findOne({ where: { claimId: uri.split('#')[1] } })
               .then(() => reject('This claim has not yet been confirmed on the LBRY blockchain'))
               .catch(() => reject(`Claim ${uri} does not exist`));
