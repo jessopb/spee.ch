@@ -30,11 +30,10 @@ const claimGet = async ({ ip, originalUrl, params, headers }, res) => {
       throw new Error('claim/get: resolveClaim: No matching uri found in Claim table');
     }
     if (headers && headers['user-agent'] && isBot(headers['user-agent'])) {
-      let lbrynetResolveResult = await resolveUri(`${name}#${claimId}`);
-      const { message, completed } = lbrynetResolveResult;
+      logger.info(`Bot GetClaim: claimId: ${claimId}`);
       res.status(200).json({
         success: true,
-        message,
+        message: 'bot',
         completed: false,
       });
       return true;
