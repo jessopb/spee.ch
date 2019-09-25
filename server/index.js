@@ -1,5 +1,6 @@
 // load modules
 const express = require('express');
+const cors = require('cors');
 const bodyParser = require('body-parser');
 const expressHandlebars = require('express-handlebars');
 const helmet = require('helmet');
@@ -86,6 +87,7 @@ function Server() {
     // set HTTP headers to protect against well-known web vulnerabilties
     app.use(helmet());
 
+    app.use(cors());
     // Support per-request http-context
     app.use(httpContext.middleware);
 
